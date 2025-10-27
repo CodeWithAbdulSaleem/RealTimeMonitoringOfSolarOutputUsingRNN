@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar Power Monitoring</title>
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+    }
+    header {
+      background: linear-gradient(90deg, #0077b6, #0096c7);
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      margin: 10px 0;
+      font-size: 1.8rem;
+      color: #0077b6;
+    }
+    .card p {
+      font-size: 1rem;
+      color: #555;
+    }
+    canvas {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100% !important;
+      height: 400px !important; /* Big Graph */
+    }
+  </style>
+</head>
+<body>
+  <header>⚡ Real-Time Solar Monitoring & Prediction</header>
+  <div class="container">
+        
+    <!-- Top Row: Voltage, Current, Temperature -->
+    <div class="cards">
+      <div class="card"><h2 id="voltage">-- V</h2><p>Voltage</p></div>
+      <div class="card"><h2 id="current">-- A</h2><p>Current</p></div>
+      <div class="card"><h2 id="temperature">-- °C</h2><p>Temperature</p></div>
+    </div>
+
+    <!-- Middle Row: Actual Power, Predicted Power -->
+    <div class="cards">
+      <div class="card"><h2 id="power">-- W</h2><p>Actual Power</p></div>
+      <div class="card"><h2 id="futurePower">-- W</h2><p>Predicted Power</p></div>
+    </div>
+
+    <!-- Bottom: Graph -->
+    <canvas id="powerChart"></canvas>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD0bPyr3XnBsp4E0dvToGfhMwLgmUCkq_c",
+      authDomain: "solar-output-prediction.firebaseapp.com",
+      databaseURL: "https://solar-output-prediction-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "solar-output-prediction",
+      storageBucket: "solar-output-prediction.appspot.com",
+      messagingSenderId: "313750300526",
+      appId: "1:313750300526:web:faae4facdba749ab38c37f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Firebase references
+    const voltageRef = db.ref("Solar/Voltage");
+    const currentRef = db.ref("Solar/Current");
+    const powerRef = db.ref("Solar/Power");
+    const futureRef = db.ref("Solar/FuturePower");
+    const tempRef = db.ref("Solar/Temperature");
+
+    // DOM elements
+    const voltageEl = document.getElementById("Voltage");
+    const currentEl = document.getElementById("Current");
+    const powerEl = document.getElementById("Power");
+    const futureEl = document.getElementById("FuturePower");
+    const tempEl = document.getElementById("Temperature");
+
+    // Chart.js setup (same as your code)
+    const ctx = document.getElementById("powerChart").getContext("2d");
+    const powerChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          { label: "Actual Power (W)", data: [], borderColor: "#0077b6", borderWidth: 2, tension: 0.3 },
+          { label: "Predicted Power (W)", data: [], borderColor: "#ff6b6b", borderDash: [5, 5], borderWidth: 2, tension: 0.3 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: "top" } },
+        scales: {
+          x: { title: { display: true, text: "Time" } },
+          y: { title: { display: true, text: "Power (W)" }, beginAtZero: true }
+        }
+      }
+    });
+
+    function addData(label, actual, predicted) {
+      if (powerChart.data.labels.length > 20) {
+        powerChart.data.labels.shift();
+        powerChart.data.datasets.forEach(ds => ds.data.shift());
+      }
+      powerChart.data.labels.push(label);
+      powerChart.data.datasets[0].data.push(actual);
+      powerChart.data.datasets[1].data.push(predicted);
+      powerChart.update();
+    }
+
+    // Realtime listeners
+    voltageRef.on("value", snap => voltageEl.textContent = snap.val() + " V");
+    currentRef.on("value", snap => currentEl.textContent = snap.val() + " A");
+    tempRef.on("value", snap => tempEl.textContent = snap.val() + " °C");
+    powerRef.on("value", snap => {
+      const actual = snap.val();
+      powerEl.textContent = actual + " W";
+      futureRef.once("value").then(fSnap => {
+        const predicted = fSnap.val();
+        futureEl.textContent = predicted + " W";
+        const time = new Date().toLocaleTimeString();
+        addData(time, actual, predicted);
+      });
+    });
+  </script>
+</body>
+</html>
