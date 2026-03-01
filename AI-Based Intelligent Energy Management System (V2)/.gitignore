@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.h5
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Arduino / ESP32
+*.bin
+*.elf
+*.hex
+*.out
+build/
+*.map
+
+# VS Code / IDE
+.vscode/
+.idea/
+*.swp
+
+# Node / Web
+node_modules/
+dist/
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase secrets
+firebase.json
+.firebaserc
+*.serviceAccount.json
+
+# Dataset
+/data/
+/datasets/
+/*.csv
+/*.xlsx
+
+# Logs
+*.log
