@@ -1,5 +1,5 @@
-# 🚀 Project Evolution
-# 🔹 Version 1.0 – Real-Time Monitoring & RNN Prediction
+# Project Evolution
+# Version 1.0 – Real-Time Monitoring & RNN Prediction
 
 An AI-driven IoT system integrating ESP32-based sensors with RNN/LSTM models to monitor and predict short-term solar power generation.
 
@@ -23,22 +23,16 @@ Solar Panel → Sensors (V, I, T)
 → ESP32 → Firebase / Google Sheets
 → Python (RNN/LSTM) → Web Dashboard
 
-# 🔹 Version 2.0 – AI-Based Intelligent Energy Management System
+#  Version 2.0 – AI-Based Intelligent Energy Management System
 
 An upgraded architecture introducing predictive management, fuzzy logic load control, advanced analytics, and professional dashboard visualization.
 
 Key Enhancements:
 
-🔋 Battery voltage & State-of-Charge monitoring
-
-⚖️ Load-specific energy tracking (Motor & Fan)
-
-🧠 LSTM-based multi-step time-series forecasting
-
-⚙️ Fuzzy Logic Engine for autonomous load control
-
-📊 Professional Streamlit Dashboard
-
+1)Battery voltage & State-of-Charge monitoring
+2)Load-specific energy tracking (Motor & Fan)
+3)LSTM-based multi-step time-series forecasting
+4)Fuzzy Logic Engine for autonomous load control
 🖥️ Dual edge display (OLED + LCD)
 
 Smart relay-based battery protection
